@@ -1,5 +1,3 @@
-// Ensure Firebase scripts are loaded before this script runs
-
 // Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDNxVVnHpffnSiBf01D8-KFkX4aAOZedbk",
@@ -13,56 +11,50 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-document.addEventListener('DOMContentLoaded', (event) => {
-    if (typeof firebase !== 'undefined') {
-        firebase.initializeApp(firebaseConfig);
-        
-        // Reference to Firebase Database
-        const database = firebase.database();
+firebase.initializeApp(firebaseConfig);
 
-        // Function to generate a user ID
-        function generateUserId() {
-            const digits = Array.from({ length: 9 }, () => Math.floor(Math.random() * 10)).join('');
-            const letters = Array.from({ length: 9 }, () => String.fromCharCode(Math.floor(Math.random() * 26) + 65)).join('');
-            return `${digits}.${letters}`;
-        }
+// Reference to Firebase Database
+const database = firebase.database();
 
-        // Function to update user info on the screen
-        function updateUserInfo(userId, gems) {
-            const userInfoDiv = document.getElementById('userInfo');
-            userInfoDiv.innerHTML = `User ID: ${userId} <br> Gems: ${gems}`;
-        }
+// Function to generate a user ID
+function generateUserId() {
+    const digits = Array.from({ length: 9 }, () => Math.floor(Math.random() * 10)).join('');
+    const letters = Array.from({ length: 9 }, () => String.fromCharCode(Math.floor(Math.random() * 26) + 65)).join('');
+    return `${digits}.${letters}`;
+}
 
-        // Create or Update user in Firebase
-        function createOrUpdateUser() {
-            const userId = generateUserId();
-            const userRef = database.ref('users/' + userId);
+// Function to update user info on the screen
+function updateUserInfo(userId, gems) {
+    const userInfoDiv = document.getElementById('userInfo');
+    userInfoDiv.innerHTML = `User ID: ${userId} <br> Gems: ${gems}`;
+}
 
-            // Set initial data for the new user
-            userRef.set({
-                gems: 10
-            }).catch((error) => {
-                console.error('Error setting initial data:', error);
-            });
+// Create or Update user in Firebase
+function createOrUpdateUser() {
+    const userId = generateUserId();
+    const userRef = database.ref('users/' + userId);
 
-            // Fetch data and update every second
-            setInterval(() => {
-                userRef.once('value').then(snapshot => {
-                    const data = snapshot.val();
-                    if (data && data.gems !== undefined) {
-                        updateUserInfo(userId, data.gems);
-                    } else {
-                        console.error('Data not found or invalid:', data);
-                    }
-                }).catch((error) => {
-                    console.error('Error fetching data:', error);
-                });
-            }, 1000);
-        }
+    // Set initial data for the new user
+    userRef.set({
+        gems: 10
+    }).catch((error) => {
+        console.error('Error setting initial data:', error);
+    });
 
-        // Initialize the user data display
-        createOrUpdateUser();
-    } else {
-        console.error('Firebase is not loaded');
-    }
-});
+    // Fetch data and update every second
+    setInterval(() => {
+        userRef.once('value').then(snapshot => {
+            const data = snapshot.val();
+            if (data && data.gems !== undefined) {
+                updateUserInfo(userId, data.gems);
+            } else {
+                console.error('Data not found or invalid:', data);
+            }
+        }).catch((error) => {
+            console.error('Error fetching data:', error);
+        });
+    }, 1000);
+}
+
+// Initialize the user data display
+createOrUpdateUser();
