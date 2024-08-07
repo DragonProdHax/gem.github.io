@@ -16,11 +16,11 @@ firebase.initializeApp(firebaseConfig);
 // Reference to Firebase Database
 const database = firebase.database();
 
-// Function to generate a user ID
+// Function to generate a valid user ID
 function generateUserId() {
     const digits = Array.from({ length: 9 }, () => Math.floor(Math.random() * 10)).join('');
     const letters = Array.from({ length: 9 }, () => String.fromCharCode(Math.floor(Math.random() * 26) + 65)).join('');
-    return `${digits}.${letters}`;
+    return digits + letters; // Remove the period and use only digits and letters
 }
 
 // Function to update user info on the screen
